@@ -10,12 +10,14 @@ export const UserPage: React.FC = () => {
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [username, setUsername] = useState<string>('');
     const [profilePicture, setProfilePicture] = useState<string>('');
+    const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
 
     useEffect(() => {
         // Fetch user details and posts
         const fetchUserData = async () => {
-            const userData = await api.getLoggedInUser();
-            if (userData) {
+            const response = await api.getLoggedInUser();
+            if (response && response.data) {
+                const userData = response.data;
                 setUser(userData);
                 setUsername(userData.username);
                 setProfilePicture(userData.profilePicture || '');
@@ -32,8 +34,21 @@ export const UserPage: React.FC = () => {
     const handleSave = async () => {
         if (user) {
             // Update user details
-            await api.updateUser(user.id, { username, profilePicture });
+            const formData = new FormData();
+            formData.append('username', username);
+            if (profilePictureFile) {
+                formData.append('profilePicture', profilePictureFile);
+            }
+
+            await api.updateUser(user.id, formData);
             setIsEditing(false);
+        }
+    };
+
+    const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setProfilePictureFile(e.target.files[0]);
+            setProfilePicture(URL.createObjectURL(e.target.files[0]));
         }
     };
 
@@ -52,10 +67,9 @@ export const UserPage: React.FC = () => {
                                 placeholder="Username"
                             />
                             <input
-                                type="text"
-                                value={profilePicture}
-                                onChange={(e) => setProfilePicture(e.target.value)}
-                                placeholder="Profile Picture URL"
+                                type="file"
+                                onChange={handleProfilePictureChange}
+                                accept="image/*"
                             />
                             <button onClick={handleSave}>Save</button>
                         </div>
