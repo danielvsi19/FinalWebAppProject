@@ -9,10 +9,12 @@ import authRoutes from "./routes/auth_routes";
 import commentRoutes from "./routes/comments_routes";
 import bodyParser from "body-parser";
 import setupSwagger from "./swagger";
+import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -46,3 +48,4 @@ mongoose.connect(process.env.DB_URL_ENV)
   });
 
 export { app };
+

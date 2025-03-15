@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
-import { LoginPage } from "../views/LoginPage/LoginPage";
 import { UserPage } from "../views/UserPage/UserPage";
 import { UserPosts } from "../views/UserPosts/UserPosts";
+import LoginPage from "../views/LoginPage/LoginPage";
+import HomePage from "../views/HomePage/HomePage";
 
 interface Page {
     path: string,
@@ -9,7 +10,7 @@ interface Page {
     name: string,
 };
 
-const pages: Page[] = [
+const pages: Page [] = [
     {
         path: "/",
         element: <LoginPage />,
@@ -24,6 +25,11 @@ const pages: Page[] = [
         path: "/userPosts",
         element: <UserPosts />,
         name: "Your posts",
+    },
+    {
+        path: "/homePage",
+        element: <HomePage />,
+        name: "Home",
     },
 ];
 
