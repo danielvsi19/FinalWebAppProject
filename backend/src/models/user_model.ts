@@ -7,6 +7,7 @@ export interface IUser extends Document {
   refreshTokens: string[];
   posts: Schema.Types.ObjectId[];
   comments: Schema.Types.ObjectId[];
+  profilePicture?: string;
 }
 
 const userSchema = new Schema<IUser>({
@@ -15,7 +16,8 @@ const userSchema = new Schema<IUser>({
   password: { type: String, required: true },
   refreshTokens: { type: [String], default: [] },
   posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
-  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]
+  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+  profilePicture: { type: String, default: '' }
 }, {
   timestamps: true
 });

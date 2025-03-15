@@ -2,7 +2,7 @@ import axiosInstance from "./axiosInstance";
 import { LoginResponse } from "./types/Responses/LoginResponse";
 import { RegisterResponse } from "./types/Responses/RegisterResponse";
 import { User } from "./types/User";
-
+import axios from "axios";
 import { AxiosResponse } from "axios";
 
 const getData = async <T>(
@@ -27,5 +27,11 @@ export default {
     },
     getUser(id: number): Promise<AxiosResponse<User, unknown> | null> {
         return getData<User>(axiosInstance.get<User>(`/user/${id}`));
+    },
+    getLoggedInUser(): Promise<AxiosResponse<User, unknown> | null> {
+        return getData<User>(axios.get<User>('/user/me'));
+    },
+    updateUser(id: number, data: Partial<User>): Promise<AxiosResponse<User, unknown> | null> {
+        return getData<User>(axios.put<User>(`/user/${id}`, data));
     },
 };
