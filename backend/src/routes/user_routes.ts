@@ -1,8 +1,10 @@
 import express from 'express';
 import userController from '../controllers/user_controller';
 import authMiddleware from '../middlewares/authMiddleware';
+import multer from 'multer';
 
 const router = express.Router();
+const upload = multer({ dest: 'uploads/' });
 
 /**
  * @swagger
@@ -82,7 +84,7 @@ router.get('/:id', authMiddleware, userController.getById);
  *       401:
  *         description: Unauthorized
  */
-router.put('/:id', authMiddleware, userController.updateUser);
+router.put('/:id', authMiddleware, upload.single('profilePicture'), userController.updateUser);
 
 /**
  * @swagger

@@ -2,6 +2,19 @@ import { Request, Response, NextFunction } from 'express';
 import UserModel from '../models/user_model';
 import PostModel from '../models/post_model';
 import CommentModel from '../models/comments_model';
+import multer from 'multer';
+import path from 'path';
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+
+const upload = multer({ storage });
 
 class UserController {
     async getById(req: Request, res: Response, next: NextFunction) {
@@ -65,6 +78,7 @@ class UserController {
 
             if (username) user.username = username;
             if (email) user.email = email;
+            if (req.file) user.profilePicture = req.file.path;
             await user.save();
             
             res.status(200).json({

@@ -1,17 +1,14 @@
-import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { LoginResponse } from "./types/Responses/LoginResponse";
 import { RegisterResponse } from "./types/Responses/RegisterResponse";
 import { User } from "./types/User";
-
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 
 const getData = async <T>(
     request: Promise<AxiosResponse<T, unknown>>
 ): Promise<AxiosResponse<T, unknown> | null> => {
     try {
         const response = await request;
-
         return response;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
@@ -34,5 +31,15 @@ export default {
     },
     getUser(id: number): Promise<AxiosResponse<User, unknown> | null> {
         return getData<User>(axiosInstance.get<User>(`/user/${id}`));
+    },
+    getLoggedInUser(): Promise<AxiosResponse<User, unknown> | null> {
+        return getData<User>(axiosInstance.get<User>('/user/me'));
+    },
+    updateUser(id: number, data: FormData): Promise<AxiosResponse<User, unknown> | null> {
+        return getData<User>(axiosInstance.put<User>(`/user/${id}`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }));
     },
 };

@@ -11,4 +11,5 @@ export interface User {
     comments: Comment [],
     createdAt: Date,
     updatedAt: Date,
+    profilePicture?: string
 };

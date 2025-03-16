@@ -1,6 +1,7 @@
 import { Schema, model, Document } from 'mongoose';
 
 export interface IPost extends Document {
+  id: Schema.Types.ObjectId;
   title: string;
   content: string;
   senderId: Schema.Types.ObjectId;
@@ -13,7 +14,8 @@ const postSchema = new Schema<IPost>({
   title: { type: String, required: true, trim: true, minlength: 3, maxlength: 255 },
   content: { type: String, required: true, trim: true, minlength: 1 },
   senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]
+  comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+  id: { type: Schema.Types.ObjectId, required: true }
 }, {
   timestamps: true
 });
