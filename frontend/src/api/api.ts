@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { LoginResponse } from "./types/Responses/LoginResponse";
 import { RegisterResponse } from "./types/Responses/RegisterResponse";
@@ -13,14 +14,20 @@ const getData = async <T>(
 
         return response;
     } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            return error.response as AxiosResponse<T, unknown>;
+        }
         console.error(error);
         return null;
-    };
+    }
 };
 
 export default {
-    login(username: string, password: string): Promise<AxiosResponse<LoginResponse, unknown> | null> {
-        return getData<LoginResponse>(axiosInstance.post<LoginResponse>('/auth/login', { username, password }));
+    login(email: string, password: string): Promise<AxiosResponse<LoginResponse, unknown> | null> {
+        return getData<LoginResponse>(axiosInstance.post<LoginResponse>('/auth/login', { email, password }));
+    },
+    googleLogin(token: string): Promise<AxiosResponse<LoginResponse, unknown> | null> {
+        return getData<LoginResponse>(axiosInstance.post<LoginResponse>('/auth/google-login', {token }));
     },
     register(username: string, email: string, password: string): Promise<AxiosResponse<RegisterResponse, unknown> | null> {
         return getData<RegisterResponse>(axiosInstance.post<RegisterResponse>('/auth/register', { username, email, password }));

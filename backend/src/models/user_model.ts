@@ -3,7 +3,8 @@ import { Schema, model, Document } from 'mongoose';
 export interface IUser extends Document {
   username: string;
   email: string;
-  password: string;
+  password?: string;
+  googleId?: string;
   refreshTokens: string[];
   posts: Schema.Types.ObjectId[];
   comments: Schema.Types.ObjectId[];
@@ -12,7 +13,8 @@ export interface IUser extends Document {
 const userSchema = new Schema<IUser>({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String },
+  googleId: { type: String, unique: true},
   refreshTokens: { type: [String], default: [] },
   posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }]

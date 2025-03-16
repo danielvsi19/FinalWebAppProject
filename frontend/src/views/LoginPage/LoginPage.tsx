@@ -12,10 +12,8 @@ const LoginPage: React.FC = () => {
 
     return (
         <div className='login-page'>
-            {isRegistering ? <RegisterForm /> : <LoginForm />}
-            <button onClick={toggleForm}>
-                {isRegistering ? 'Back to Login' : 'Register'}
-            </button>
+            {isRegistering ? <RegisterForm toggleForm={toggleForm} /> : <LoginForm toggleForm={toggleForm} />}
+            
         </div>
     );
 };

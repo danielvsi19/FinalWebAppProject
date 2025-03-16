@@ -14,7 +14,7 @@ const pages: Page [] = [
     {
         path: "/",
         element: <LoginPage />,
-        name: "Login",
+        name: "Logout",
     },
     {
         path: "/user",
