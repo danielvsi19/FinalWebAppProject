@@ -97,7 +97,7 @@ const googleLogin = async (req: Request, res: Response) => {
             return;
         };
 
-        const { sub, email, name } = payload;
+        const { sub, email, name, picture } = payload;
         let user = await userModel.findOne({ googleId: sub });
 
         console.log("reached 3");
@@ -107,6 +107,7 @@ const googleLogin = async (req: Request, res: Response) => {
                 username: name,
                 email: email,
                 googleId: sub,
+                profilePicture: picture,
             });
 
             await user.save();

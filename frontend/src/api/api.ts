@@ -19,6 +19,8 @@ const getData = async <T>(
     }
 };
 
+const currentUserId = JSON.parse(localStorage.getItem('user') || '{}')._id;
+
 export default {
     login(email: string, password: string): Promise<AxiosResponse<LoginResponse, unknown> | null> {
         return getData<LoginResponse>(axiosInstance.post<LoginResponse>('/auth/login', { email, password }));
@@ -30,10 +32,10 @@ export default {
         return getData<RegisterResponse>(axiosInstance.post<RegisterResponse>('/auth/register', { username, email, password }));
     },
     getUser(id: number): Promise<AxiosResponse<User, unknown> | null> {
-        return getData<User>(axiosInstance.get<User>(`/user/${id}`));
+        return getData<User>(axiosInstance.get<User>(`/users/${id}`));
     },
     getLoggedInUser(): Promise<AxiosResponse<User, unknown> | null> {
-        return getData<User>(axiosInstance.get<User>('/user/me'));
+        return getData<User>(axiosInstance.get<User>(`/users/${currentUserId}`));
     },
     updateUser(id: number, data: FormData): Promise<AxiosResponse<User, unknown> | null> {
         return getData<User>(axiosInstance.put<User>(`/user/${id}`, data, {

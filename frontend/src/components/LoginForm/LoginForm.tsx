@@ -12,10 +12,16 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ toggleForm }) => {
-    const { setIsLoggedIn } = useContext(AuthContext);
+    const authContext = useContext(AuthContext);
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+
+    if (!authContext) {
+        return null;
+    };
+    
+    const { setUser } = authContext || {};
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,7 +32,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ toggleForm }) => {
             if (response) {
                 if (response.status === StatusCodes.OK) {
                     localStorage.setItem('user', JSON.stringify(response.data));
-                    setIsLoggedIn(true);
+                    // setUser(await api.getLoggedInUser());
                     navigate('/homePage');
                 } else if (response.status === StatusCodes.BAD_REQUEST) {
                     Swal.fire('Error', 'Invalid credentials', 'error');
@@ -34,18 +40,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ toggleForm }) => {
             }
         } catch (error) {
             Swal.fire('Error', 'An error occurred during login.', 'error');
-        }
+        };
     };
 
     const handleGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
         if (credentialResponse.credential) {
             try {
-                console.log(credentialResponse.credential);
                 const response = await api.googleLogin(credentialResponse.credential);
 
                 if (response && response.status === StatusCodes.OK) {
                     localStorage.setItem('user', JSON.stringify(response.data));
-                    setIsLoggedIn(true);
+                    // setUser(await api.getLoggedInUser());
+                    // console.log("logged in user:", api.getLoggedInUser());
                     navigate('/homePage');
                 } else {
                     Swal.fire('Error', 'An error occurred during Google login.', 'error');
