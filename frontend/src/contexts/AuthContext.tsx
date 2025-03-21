@@ -14,21 +14,18 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     useEffect(() => {
         const fetchUserDetails = async () => {
-            if (user && user._id) {
-                const response = await api.getUser(user._id);
+            if (!user || !user._id) {
+                const response = (await api.getLoggedInUser(localStorage.getItem('loggedInUserId')!));
+                // console.log("authcon", response?.data.data); // response.data.data is the user object
+
                 if (response && response.status === 200) {
-                    console.log("response:" , response.data);
-                    setUser(response.data);
+                    setUser(response.data.data);
                 }
             }
         };
 
         fetchUserDetails();
     }, []);
-
-    useEffect(() => {
-        localStorage.setItem('user', JSON.stringify(user));
-    }, [user]);
 
     return (
         <AuthContext.Provider value={{ user, setUser }}>

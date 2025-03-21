@@ -16,6 +16,7 @@ export const Navbar = () => {
     const { user, setUser } = authContext || {};
 
     const handleLogout = () => {
+        localStorage.removeItem('loggedInUserId');
         localStorage.removeItem('token');
         setUser(null);
         navigate('/');
