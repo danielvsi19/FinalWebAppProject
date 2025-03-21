@@ -15,13 +15,17 @@ export const UserPage: React.FC = () => {
     useEffect(() => {
         // Fetch user details and posts
         const fetchUserData = async () => {
-            const response = await api.getLoggedInUser();
-            if (response && response.data) {
-                const userData = response.data;
-                setUser(userData);
-                setUsername(userData.username);
-                setProfilePicture(userData.profilePicture || '');
-                setPosts(userData.posts);
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                const userId = JSON.parse(storedUser)._id;
+                const response = await api.getUser(userId);
+                if (response && response.data) {
+                    const userData = response.data;
+                    setUser(userData);
+                    setUsername(userData.username);
+                    setProfilePicture(userData.profilePicture || '');
+                    setPosts(userData.posts);
+                }
             }
         };
         fetchUserData();
@@ -40,8 +44,12 @@ export const UserPage: React.FC = () => {
                 formData.append('profilePicture', profilePictureFile);
             }
 
-            await api.updateUser(user.id, formData);
-            setIsEditing(false);
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                const userId = JSON.parse(storedUser)._id;
+                await api.updateUser(userId, formData);
+                setIsEditing(false);
+            }
         }
     };
 

@@ -30,13 +30,10 @@ export default {
         return getData<RegisterResponse>(axiosInstance.post<RegisterResponse>('/auth/register', { username, email, password }));
     },
     getUser(id: number): Promise<AxiosResponse<User, unknown> | null> {
-        return getData<User>(axiosInstance.get<User>(`/user/${id}`));
-    },
-    getLoggedInUser(): Promise<AxiosResponse<User, unknown> | null> {
-        return getData<User>(axiosInstance.get<User>('/user/me'));
+        return getData<User>(axiosInstance.get<User>(`/users/${id}`));
     },
     updateUser(id: number, data: FormData): Promise<AxiosResponse<User, unknown> | null> {
-        return getData<User>(axiosInstance.put<User>(`/user/${id}`, data, {
+        return getData<User>(axiosInstance.put<User>(`/users/${id}`, data, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
