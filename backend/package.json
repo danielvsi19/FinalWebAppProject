@@ -4,14 +4,16 @@
   "description": "Advanced web applications project",
   "main": "app.js",
   "scripts": {
-    "start": "tsc && node ./dist/backend/src/app.js",
+    "start": "tsc && pm2 start ecosystem.config.js",
+    "stop": "pm2 stop barker-backend",
+    "restart": "pm2 restart barker-backend",
+    "logs": "pm2 logs barker-backend",
+    "status": "pm2 status",
+    "build": "tsc",
     "dev": "nodemon ./src/app.ts",
-    "test": "jest --detectOpenHandles --forceExit --coverage",
-    "testauth": " tsc && jest --detectOpenHandles --forceExit auth.test.ts",
-    "lint": "eslint . --ext .ts",
-    "test:watch": "jest --watch"
+    "test": "jest --detectOpenHandles --forceExit --coverage"
   },
-  "author": "eden aharon",
+  "author": "danielvsi19",
   "license": "ISC",
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
