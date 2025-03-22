@@ -6,5 +6,7 @@ export interface Post {
     comments: Comment[];
     createdAt: Date;
     updatedAt: Date;
+    likes: number;
+    likedBy: string[];
     _id: string;
   }

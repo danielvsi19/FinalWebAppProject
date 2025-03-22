@@ -150,4 +150,8 @@ router.put('/:id', authMiddleware, postController.update);
  */
 router.delete('/:id', authMiddleware, postController.delete);
 
+router.post('/:id/like', authMiddleware, postController.incrementLikes)
+;
+router.post('/:id/unlike', authMiddleware, postController.decrementLikes);
+
 export default router;

@@ -1,8 +1,10 @@
 import axiosInstance from "./axiosInstance";
 import { GetLoggedInUserResponse } from "./types/Responses/GetLoggedInUserResponse";
 import { GetPostsResponse } from "./types/Responses/GetPostsResponse.ts";
+import { LikePostResponse } from "./types/Responses/LikePostResponse.ts";
 import { LoginResponse } from "./types/Responses/LoginResponse";
 import { RegisterResponse } from "./types/Responses/RegisterResponse";
+import { UnlikePostResponse } from "./types/Responses/UnlikePostResponse.ts";
 import { User } from "./types/User";
 import axios, { AxiosResponse } from "axios";
 
@@ -45,6 +47,12 @@ export default {
         }));
     },
     getLoggedInUserPosts(loggedInUserId: string): Promise<AxiosResponse<GetPostsResponse, unknown> | null> {
-        return getData<any>(axiosInstance.get<GetPostsResponse>(`/posts/sender/${loggedInUserId}`));
+        return getData<GetPostsResponse>(axiosInstance.get<GetPostsResponse>(`/posts/sender/${loggedInUserId}`));
+    },
+    likePost(postId: string, userId: string): Promise<AxiosResponse<LikePostResponse, unknown> | null> {
+        return getData<LikePostResponse>(axiosInstance.post<LikePostResponse>(`/posts/${postId}/like`, { userId }));
+    },
+    unlikePost(postId: string, userId: string): Promise<AxiosResponse<UnlikePostResponse, unknown> | null> {
+        return getData<UnlikePostResponse>(axiosInstance.post<UnlikePostResponse>(`/posts/${postId}/unlike`,  { userId }));
     },
 };

@@ -39,6 +39,7 @@ const register = async (req: Request, res: Response) => {
             },
         });
     } catch (err) {
+        console.log(err);
         res.status(500).json({ message: "Error registering user" });
     }
 };
@@ -93,14 +94,11 @@ const googleLogin = async (req: Request, res: Response) => {
         const payload = ticket.getPayload();
         if (!payload) {
             res.status(400).json({ message: 'Invalid Google token' });
-
             return;
         };
 
         const { sub, email, name, picture } = payload;
         let user = await userModel.findOne({ googleId: sub });
-
-        console.log("reached 3");
 
         if (!user) {
             user = new userModel({
@@ -111,13 +109,10 @@ const googleLogin = async (req: Request, res: Response) => {
             });
 
             await user.save();
-        } else {
-            console.log("User found:", user);
         }
 
         if (!process.env.TOKEN_SECRET) {
             res.status(500).json({ message: "Server Error" });
-
             return;
         };
         

@@ -8,6 +8,8 @@ export interface IPost extends Document {
   comments: Schema.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
+  likes: number;
+  likedBy: Schema.Types.ObjectId[];
 }
 
 const postSchema = new Schema<IPost>({
@@ -16,6 +18,8 @@ const postSchema = new Schema<IPost>({
   image: { type: String },
   senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+  likes: { type: Number, default: 0 },
+  likedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }]
 }, {
   timestamps: true
 });

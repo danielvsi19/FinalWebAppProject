@@ -15,7 +15,7 @@ const userSchema = new Schema<IUser>({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String },
-  googleId: { type: String, unique: true},
+  googleId: { type: String, unique: true, sparse: true },
   refreshTokens: { type: [String], default: [] },
   posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],

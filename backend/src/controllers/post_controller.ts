@@ -6,7 +6,7 @@ import UserModel from '../models/user_model';
 class PostController {
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { title, content, senderId } = req.body;
+            const { title, content, senderId, image } = req.body;
 
             if (!mongoose.Types.ObjectId.isValid(senderId)) {
                 res.status(400).json({ message: 'Invalid senderId' });
@@ -16,6 +16,7 @@ class PostController {
             const post = new PostModel({
                 title,
                 content,
+                image: image,
                 senderId: new mongoose.Types.ObjectId(senderId),
             });
 
@@ -101,6 +102,60 @@ class PostController {
             }
             await post.deleteOne();
             res.status(200).json({ message: 'Post deleted successfully' });
+        } catch (error: any) {
+            next(error);
+        }
+    }
+    
+    async incrementLikes(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const postId = req.params.id;
+            const userId = req.body.userId;
+
+            if (!mongoose.Types.ObjectId.isValid(postId)) {
+                res.status(400).json({ message: 'Invalid post ID' });
+                return;
+            }
+
+            const post = await PostModel.findByIdAndUpdate(
+                postId,
+                { $inc: { likes: 1 }, $addToSet: { likedBy: userId } },
+                { new: true }
+            );
+
+            if (!post) {
+                res.status(404).json({ message: 'Post not found' });
+                return;
+            }
+
+            res.status(200).json(post);
+        } catch (error: any) {
+            next(error);
+        }
+    }
+
+    async decrementLikes(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const postId = req.params.id;
+            const userId = req.body.userId;
+
+            if (!mongoose.Types.ObjectId.isValid(postId)) {
+                res.status(400).json({ message: 'Invalid post ID' });
+                return;
+            }
+
+            const post = await PostModel.findByIdAndUpdate(
+                postId,
+                { $inc: { likes: -1 }, $pull: { likedBy: userId } },
+                { new: true }
+            );
+
+            if (!post) {
+                res.status(404).json({ message: 'Post not found' });
+                return;
+            }
+
+            res.status(200).json(post);
         } catch (error: any) {
             next(error);
         }
