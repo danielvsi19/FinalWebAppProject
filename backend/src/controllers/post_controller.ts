@@ -6,7 +6,12 @@ import UserModel from '../models/user_model';
 class PostController {
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { title, content, senderId, image } = req.body;
+            const { title, content, senderId } = req.body;
+
+            if (!title || !content || !senderId) {
+                res.status(400).json({ message: 'Missing required fields' });
+                return;
+            }
 
             if (!mongoose.Types.ObjectId.isValid(senderId)) {
                 res.status(400).json({ message: 'Invalid senderId' });
@@ -16,15 +21,16 @@ class PostController {
             const post = new PostModel({
                 title,
                 content,
-                image: image,
                 senderId: new mongoose.Types.ObjectId(senderId),
+                image: req.file?.path // Handle file upload if present
             });
 
             await post.save();
 
+            // Add post reference to user
             await UserModel.findByIdAndUpdate(
                 senderId,
-                { $push: { posts: post._id } },
+                { $push: { posts: post._id } }
             );
 
             res.status(201).json(post);
@@ -35,7 +41,7 @@ class PostController {
 
     async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const posts = await PostModel.find();
+            const posts = await PostModel.find().sort({ createdAt: -1 }); // -1 for descending order
             res.status(200).json(posts);
         } catch (error: any) {
             next(error);
@@ -74,15 +80,32 @@ class PostController {
                 res.status(404).json({ message: 'Invalid post ID' });
                 return;
             }
+
+            const updateData: any = {
+                title: req.body.title,
+                content: req.body.content,
+            };
+
+            // Handle image updates
+            if (req.file) {
+                // New image uploaded
+                updateData.image = req.file.path;
+            } else if (req.body.removeImage === 'true') {
+                // Remove image
+                updateData.image = '';
+            }
+
             const post = await PostModel.findByIdAndUpdate(
                 req.params.id,
-                req.body,
+                updateData,
                 { new: true, runValidators: true }
             );
+
             if (!post) {
                 res.status(404).json({ message: 'Post not found' });
                 return;
             }
+
             res.status(200).json(post);
         } catch (error: any) {
             next(error);

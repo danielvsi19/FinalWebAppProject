@@ -55,9 +55,10 @@
     background-color: #f8f9fa;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    right: 20px;
-    top: 100px;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
 }
 
 .news-section h2 {
@@ -103,4 +104,93 @@
 
 .news-card .card-body {
     padding: 1rem;
+}
+
+.posts-section {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.post-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    border: none;
+}
+
+.post-card:hover {
+    transform: translateY(-2px);
+}
+
+.pagination {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.pagination .page-item .page-link {
+    color: #1da1f2;
+    border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #1da1f2;
+    border-color: #1da1f2;
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+}
+
+.floating-create-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+}
+
+.create-post-btn {
+    background-color: #1da1f2;
+    border-color: #1da1f2;
+    border-radius: 30px;
+    padding: 15px 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);
+}
+
+.create-post-btn:hover {
+    background-color: #1a91da;
+    border-color: #1a91da;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(29, 161, 242, 0.4);
+}
+
+.create-post-btn i {
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+
+.modal-content {
+    border-radius: 15px;
+}
+
+.modal-header {
+    border-bottom: 1px solid #e6ecf0;
+}
+
+.modal-footer {
+    border-top: 1px solid #e6ecf0;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 1px solid #e6ecf0;
+}
+
+.form-control:focus {
+    border-color: #1da1f2;
+    box-shadow: 0 0 0 0.2rem rgba(29, 161, 242, 0.25);
 }
