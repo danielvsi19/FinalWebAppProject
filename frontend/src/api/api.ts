@@ -1,5 +1,6 @@
 import axiosInstance from "./axiosInstance";
 import { GetLoggedInUserResponse } from "./types/Responses/GetLoggedInUserResponse";
+import { GetPostsResponse } from "./types/Responses/GetPostsResponse.ts";
 import { LoginResponse } from "./types/Responses/LoginResponse";
 import { RegisterResponse } from "./types/Responses/RegisterResponse";
 import { User } from "./types/User";
@@ -42,5 +43,8 @@ export default {
                 'Content-Type': 'multipart/form-data'
             }
         }));
+    },
+    getLoggedInUserPosts(loggedInUserId: string): Promise<AxiosResponse<GetPostsResponse, unknown> | null> {
+        return getData<any>(axiosInstance.get<any>(`/posts/sender/${loggedInUserId}`));
     },
 };

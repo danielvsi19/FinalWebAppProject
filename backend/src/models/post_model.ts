@@ -1,9 +1,9 @@
 import { Schema, model, Document } from 'mongoose';
 
 export interface IPost extends Document {
-  id: Schema.Types.ObjectId;
   title: string;
   content: string;
+  image?: string,
   senderId: Schema.Types.ObjectId;
   comments: Schema.Types.ObjectId[];
   createdAt: Date;
@@ -13,9 +13,9 @@ export interface IPost extends Document {
 const postSchema = new Schema<IPost>({
   title: { type: String, required: true, trim: true, minlength: 3, maxlength: 255 },
   content: { type: String, required: true, trim: true, minlength: 1 },
+  image: { type: String },
   senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
-  id: { type: Schema.Types.ObjectId, required: true }
 }, {
   timestamps: true
 });

@@ -1,11 +1,31 @@
 import { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import PostModel from '../models/post_model';
+import UserModel from '../models/user_model';
 
 class PostController {
     async create(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const post = await PostModel.create(req.body);
+            const { title, content, senderId } = req.body;
+
+            if (!mongoose.Types.ObjectId.isValid(senderId)) {
+                res.status(400).json({ message: 'Invalid senderId' });
+                return;
+            }
+
+            const post = new PostModel({
+                title,
+                content,
+                senderId: new mongoose.Types.ObjectId(senderId),
+            });
+
+            await post.save();
+
+            await UserModel.findByIdAndUpdate(
+                senderId,
+                { $push: { posts: post._id } },
+            );
+
             res.status(201).json(post);
         } catch (error: any) {
             next(error);
@@ -40,7 +60,7 @@ class PostController {
 
     async getBySender(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const posts = await PostModel.find({ sender: req.params.senderId });
+            const posts = await PostModel.find({ senderId: req.params.senderId });
             res.status(200).json(posts);
         } catch (error: any) {
             next(error);
