@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './HomePage.css';
 import axios from 'axios';
-import { Card, Alert } from 'react-bootstrap';
+import { Card, Alert, Container } from 'react-bootstrap';
 
 interface NewsItem {
     title: string;
@@ -35,41 +35,36 @@ const HomePage: React.FC = () => {
     return (
         <div className="homepage">
             <header className="homepage-header">
-                <h1>Welcome to the Home Page</h1>
+                <h1>Welcome to Barker</h1>
             </header>
 
             <main className="homepage-main">
-                <div className="news-section">
-                    <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h2>Today's Happy News</h2>
+                <Container fluid className="d-flex justify-content-end">
+                    <div className="news-section" style={{ width: '300px', marginRight: '20px' }}>
+                        <h2 className="text-center h5 mb-4">Today's Happy News</h2>
+
+                        {error && (
+                            <Alert variant="warning" className="mb-4">
+                                {error}
+                            </Alert>
+                        )}
+
+                        {loading ? (
+                            <p>Loading news...</p>
+                        ) : (
+                            <div className="news-grid">
+                                {news.map((item, index) => (
+                                    <Card key={index} className="news-card mb-3">
+                                        <Card.Body>
+                                            <Card.Title className="h6">{item.title}</Card.Title>
+                                            <Card.Text className="small">{item.content}</Card.Text>
+                                        </Card.Body>
+                                    </Card>
+                                ))}
+                            </div>
+                        )}
                     </div>
-
-                    {error && (
-                        <Alert variant="warning" className="mb-4">
-                            {error}
-                        </Alert>
-                    )}
-
-                    {loading ? (
-                        <p>Loading news...</p>
-                    ) : (
-                        <div className="news-grid">
-                            {news.map((item, index) => (
-                                <Card key={index} className="news-card">
-                                    <Card.Body>
-                                        <Card.Title>{item.title}</Card.Title>
-                                        <Card.Text>{item.content}</Card.Text>
-                                    </Card.Body>
-                                </Card>
-                            ))}
-                        </div>
-                    )}
-
-                    <div className="posts-box">
-                        <textarea placeholder="What's happening?" />
-                        <button>Tweet</button>
-                    </div>
-                </div>
+                </Container>
             </main>
         </div>
     );
