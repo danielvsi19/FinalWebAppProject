@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+import { GetCommentsResponse } from "./types/Responses/GetCommentsResponse.ts";
 import { GetLoggedInUserResponse } from "./types/Responses/GetLoggedInUserResponse";
 import { GetPostsResponse } from "./types/Responses/GetPostsResponse.ts";
 import { LikePostResponse } from "./types/Responses/LikePostResponse.ts";
@@ -54,5 +55,8 @@ export default {
     },
     unlikePost(postId: string, userId: string): Promise<AxiosResponse<UnlikePostResponse, unknown> | null> {
         return getData<UnlikePostResponse>(axiosInstance.post<UnlikePostResponse>(`/posts/${postId}/unlike`,  { userId }));
+    },
+    getCommentsByPostId(postId: string): Promise<AxiosResponse<GetCommentsResponse, unknown> | null> {
+        return getData<GetCommentsResponse>(axiosInstance.get<GetCommentsResponse>(`/comments/post/${postId}`));
     },
 };
