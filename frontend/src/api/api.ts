@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+import { GetCommentsResponse } from "./types/Responses/GetCommentsResponse.ts";
 import { GetLoggedInUserResponse } from "./types/Responses/GetLoggedInUserResponse";
 import { GetPostsResponse } from "./types/Responses/GetPostsResponse.ts";
 import { LikePostResponse } from "./types/Responses/LikePostResponse.ts";
@@ -72,5 +73,7 @@ export default {
     },
     deletePost(postId: string): Promise<AxiosResponse<any, unknown> | null> {
         return getData<any>(axiosInstance.delete(`/posts/${postId}`));
+    getCommentsByPostId(postId: string): Promise<AxiosResponse<GetCommentsResponse, unknown> | null> {
+        return getData<GetCommentsResponse>(axiosInstance.get<GetCommentsResponse>(`/comments/post/${postId}`));
     },
 };

@@ -6,18 +6,17 @@ import PostModel from "../models/post_model";
 class CommentsController {
     async createComment(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { content } = req.body;
+            const { content, authorId } = req.body;
             const postId = req.params.postId;
-            const userId = req.params.userId;
 
-            if (!mongoose.Types.ObjectId.isValid(postId) || !mongoose.Types.ObjectId.isValid(userId)) {
+            if (!mongoose.Types.ObjectId.isValid(postId) || !mongoose.Types.ObjectId.isValid(authorId)) {
                 res.status(400).json({ message: "Invalid post ID or user ID" });
                 return;
             }
 
             const comment = await CommentModel.create({
                 content,
-                author: userId,
+                author: authorId,
                 post: postId,
             });
 

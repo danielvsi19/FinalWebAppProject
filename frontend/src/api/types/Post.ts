@@ -1,3 +1,5 @@
+import { Comment } from './Comment';
+
 export interface Post {
     title: string;
     content: string;
