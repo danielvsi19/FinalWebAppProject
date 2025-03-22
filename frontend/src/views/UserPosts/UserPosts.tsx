@@ -4,6 +4,8 @@ import api from '../../api/api';
 import PostComponent from '../../components/Post/Post';
 import { Post } from '../../api/types/Post';
 import ScaleLoader from 'react-spinners/ScaleLoader';
+import { Container, Row, Col, Card } from 'react-bootstrap';
+import './UserPosts.css';
 
 export const UserPosts: React.FC = () => {
     const authContext = useContext<AuthContextType | undefined>(AuthContext);
@@ -13,12 +15,13 @@ export const UserPosts: React.FC = () => {
     useEffect(() => {
         const fetchUserPosts = async () => {
             if (authContext?.user) {
-                console.log("user", JSON.stringify(authContext.user._id));
-                const response = await api.getLoggedInUserPosts(JSON.stringify(authContext.user._id));
+                console.log("user", authContext.user._id);
+                const response = await api.getLoggedInUserPosts(authContext.user._id);
                 if (response && response.data) {
-                    setPosts(response.data.data);
+                    console.log("posts", response.data);
+                    setPosts(response.data);
+                    setLoading(false);
                 }
-                setLoading(false);
             }
         };
 
@@ -26,19 +29,27 @@ export const UserPosts: React.FC = () => {
     }, [authContext]);
 
     if (loading) {
-        return <ScaleLoader color="black" />;
+        return <ScaleLoader color="black" className='spinner' height={50} width={50}/>;
     }
 
     return (
-        <div>
-            <h1>User Posts</h1>
-            {posts.length > 0 ? (
-                posts.map((post) => (
-                    <PostComponent key={post._id} {...post} />
-                ))
-            ) : (
-                <p>No posts available.</p>
-            )}
-        </div>
+        <Container className="user-posts-container">
+            <h1 className="text-center mb-4">{authContext?.user?.username + "'s Posts"}</h1>
+            <Row className="justify-content-center">
+                {posts.length > 0 ? (
+                    posts.map((post) => (
+                        <Col key={post._id} md={6} lg={4} className="mb-4">
+                            <Card className="post-card">
+                                <Card.Body>
+                                    <PostComponent {...post} />
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    ))
+                ) : (
+                    <p>No posts available.</p>
+                )}
+            </Row>
+        </Container>
     );
 };

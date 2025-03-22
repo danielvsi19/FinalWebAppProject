@@ -45,6 +45,6 @@ export default {
         }));
     },
     getLoggedInUserPosts(loggedInUserId: string): Promise<AxiosResponse<GetPostsResponse, unknown> | null> {
-        return getData<any>(axiosInstance.get<any>(`/posts/sender/${loggedInUserId}`));
+        return getData<any>(axiosInstance.get<GetPostsResponse>(`/posts/sender/${loggedInUserId}`));
     },
 };

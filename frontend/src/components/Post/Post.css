@@ -1,0 +1,9 @@
+.post-component {
+    padding: 20px;
+}
+
+.post-component img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+}

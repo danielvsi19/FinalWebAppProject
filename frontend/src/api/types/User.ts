@@ -2,7 +2,7 @@ import { Comment } from "./Comment";
 import { Post } from "./Post";
 
 export interface User {
-    _id: number,
+    _id: string,
     username: string,
     email: string,
     password: string,
