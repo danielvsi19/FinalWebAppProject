@@ -19,9 +19,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ toggleForm }) => {
 
     if (!authContext) {
         return null;
-    };
+    }
     
-    const { setUser } = authContext || {};
+    const { setUser } = authContext;
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,28 +29,32 @@ const LoginForm: React.FC<LoginFormProps> = ({ toggleForm }) => {
         try {
             const response = await api.login(email, password);
 
-            if (response) {
-                if (response.status === StatusCodes.OK) {
-                    const loginResponse = response.data;
+            if (response && response.status === StatusCodes.OK) {
+                const loginResponse = response.data;
+                
+                // Store tokens first
+                localStorage.setItem('loggedInUserId', JSON.stringify(loginResponse._id));
+                localStorage.setItem('token', JSON.stringify(loginResponse.token));
+
+                // Get full user data
+                const fullUserResponse = await api.getLoggedInUser(JSON.stringify(loginResponse._id));
+                
+                if (fullUserResponse?.data?.data) {
+                    // Update user in context
+                    await setUser(fullUserResponse.data.data);
                     
-                    localStorage.setItem('loggedInUserId', JSON.stringify(loginResponse._id));
-                    localStorage.setItem('token', JSON.stringify(loginResponse.token));
-
-                    console.log("id", loginResponse);
-                    const fullUserResponse = await api.getLoggedInUser(JSON.stringify(loginResponse._id));
-                    if (fullUserResponse && fullUserResponse.data) {
-                        setUser(fullUserResponse.data.user);
-                    };
-
-                    navigate('/homePage');
-                } else if (response.status === StatusCodes.BAD_REQUEST) {
-                    Swal.fire('Error', 'Invalid credentials', 'error');
+                    // Add a small delay to ensure context is updated
+                    setTimeout(() => {
+                        navigate('/homePage');
+                    }, 100);
                 }
+            } else if (response?.status === StatusCodes.BAD_REQUEST) {
+                Swal.fire('Error', 'Invalid credentials', 'error');
             }
         } catch (error) {
-            console.log("errorr", error);
+            console.error("Login error:", error);
             Swal.fire('Error', 'An error occurred during login.', 'error');
-        };
+        }
     };
 
     const handleGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
@@ -58,25 +62,28 @@ const LoginForm: React.FC<LoginFormProps> = ({ toggleForm }) => {
             try {
                 const response = await api.googleLogin(credentialResponse.credential);
 
-                if (response && response.status === StatusCodes.OK) {
+                if (response?.status === StatusCodes.OK) {
                     const loginResponse = response.data;
                     
                     localStorage.setItem('loggedInUserId', JSON.stringify(loginResponse._id));
                     localStorage.setItem('token', JSON.stringify(loginResponse.token));
 
                     const fullUserResponse = await api.getLoggedInUser(JSON.stringify(loginResponse._id));
-                    if (fullUserResponse && fullUserResponse.data) {
-                        setUser(fullUserResponse.data.user);
-                    };
-
-                    navigate('/homePage');
+                    
+                    if (fullUserResponse?.data?.data) {
+                        await setUser(fullUserResponse.data.data);
+                        
+                        setTimeout(() => {
+                            navigate('/homePage');
+                        }, 100);
+                    }
                 } else {
                     Swal.fire('Error', 'An error occurred during Google login.', 'error');
                 }
             } catch (error) {
+                console.error("Google login error:", error);
                 Swal.fire('Error', 'An error occurred during Google login.', 'error');
-                console.log(error);
-        }
+            }
         }
     };
 
