@@ -3,10 +3,6 @@ module.exports = {
     name: "barker-frontend",
     script: "npm",
     args: "run dev",
-    env: {
-      PORT: 4000,
-      VITE_GOOGLE_CLIENT_ID: "687842546802-kq531epgqsub4ijr1pvm7bmsr44ht8ul.apps.googleusercontent.com"
-    },
     watch: true,
     ignore_watch: ["node_modules", "logs"],
     max_memory_restart: "1G",
