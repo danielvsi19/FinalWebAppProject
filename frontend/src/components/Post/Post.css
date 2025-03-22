@@ -7,3 +7,25 @@
     height: auto;
     margin-bottom: 15px;
 }
+
+.post-actions {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.owner-actions button {
+    transition: all 0.2s ease;
+}
+
+.owner-actions button:hover {
+    transform: translateY(-1px);
+}
+
+.likes-count {
+    font-size: 1.1rem;
+}
+
+.likes-count i {
+    margin-right: 5px;
+}

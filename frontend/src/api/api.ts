@@ -9,6 +9,8 @@ import { UnlikePostResponse } from "./types/Responses/UnlikePostResponse.ts";
 import { User } from "./types/User";
 import axios, { AxiosResponse } from "axios";
 
+const BACKEND_URL = 'http://localhost:3000';
+
 const getData = async <T>(
     request: Promise<AxiosResponse<T, unknown>>
 ): Promise<AxiosResponse<T, unknown> | null> => {
@@ -56,6 +58,21 @@ export default {
     unlikePost(postId: string, userId: string): Promise<AxiosResponse<UnlikePostResponse, unknown> | null> {
         return getData<UnlikePostResponse>(axiosInstance.post<UnlikePostResponse>(`/posts/${postId}/unlike`,  { userId }));
     },
+    updatePost(postId: string, data: FormData): Promise<AxiosResponse<Post, unknown> | null> {
+        const token = JSON.parse(localStorage.getItem('token') || '""');
+        if (data.get('removeImage') === 'true') {
+            data.append('image', '');
+        }
+        return getData<Post>(axiosInstance.put<Post>(`/posts/${postId}`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`
+            },
+            baseURL: BACKEND_URL
+        }));
+    },
+    deletePost(postId: string): Promise<AxiosResponse<any, unknown> | null> {
+        return getData<any>(axiosInstance.delete(`/posts/${postId}`));
     getCommentsByPostId(postId: string): Promise<AxiosResponse<GetCommentsResponse, unknown> | null> {
         return getData<GetCommentsResponse>(axiosInstance.get<GetCommentsResponse>(`/comments/post/${postId}`));
     },

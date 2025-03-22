@@ -1,8 +1,21 @@
 import express from 'express';
 import postController from '../controllers/post_controller';
 import authMiddleware from '../middlewares/authMiddleware';
+import multer from 'multer';
 
 const router = express.Router();
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + '-' + file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage });
 
 /**
  * @swagger
@@ -37,7 +50,7 @@ const router = express.Router();
  *       401:
  *         description: Unauthorized
  */
-router.post('/', authMiddleware, postController.create);
+router.post('/', authMiddleware, upload.single('image'), postController.create);
 
 /**
  * @swagger
@@ -125,7 +138,7 @@ router.get('/sender/:senderId', postController.getBySender);
  *       401:
  *         description: Unauthorized
  */
-router.put('/:id', authMiddleware, postController.update);
+router.put('/:id', authMiddleware, upload.single('image'), postController.update);
 
 /**
  * @swagger
