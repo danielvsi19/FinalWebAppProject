@@ -171,7 +171,6 @@ const PostComponent: React.FC<Post> = ({ _id, title, content, image, createdAt, 
                     </div>
                 )}
             </div>
-<<<<<<< HEAD
 
             {/* Edit Modal */}
             <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
@@ -230,7 +229,6 @@ const PostComponent: React.FC<Post> = ({ _id, title, content, image, createdAt, 
                     </Button>
                     <Button variant="primary" onClick={handleEdit}>
                         Save Changes
-=======
             <div 
                 style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }} 
                 onClick={handleShowComments}
@@ -258,7 +256,6 @@ const PostComponent: React.FC<Post> = ({ _id, title, content, image, createdAt, 
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleCloseComments}>
                         Close
->>>>>>> a17759e9bf67dd3db81305efa03c30ec95f9b0a8
                     </Button>
                 </Modal.Footer>
             </Modal>
