@@ -1,6 +1,8 @@
 import { RegisteredUser } from "./RegisteredUser";
 
 export interface LoginResponse {
-    RegisteredUser: RegisteredUser;
+    username: string;
+    email: string;
+    _id: string;
     token: string;
 };

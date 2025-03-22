@@ -12,10 +12,16 @@ interface LoginFormProps {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ toggleForm }) => {
-    const { setIsLoggedIn } = useContext(AuthContext);
+    const authContext = useContext(AuthContext);
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+
+    if (!authContext) {
+        return null;
+    };
+    
+    const { setUser } = authContext || {};
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,34 +31,52 @@ const LoginForm: React.FC<LoginFormProps> = ({ toggleForm }) => {
 
             if (response) {
                 if (response.status === StatusCodes.OK) {
-                    localStorage.setItem('user', JSON.stringify(response.data));
-                    setIsLoggedIn(true);
+                    const loginResponse = response.data;
+                    
+                    localStorage.setItem('loggedInUserId', JSON.stringify(loginResponse._id));
+                    localStorage.setItem('token', JSON.stringify(loginResponse.token));
+
+                    console.log("id", loginResponse);
+                    const fullUserResponse = await api.getLoggedInUser(JSON.stringify(loginResponse._id));
+                    if (fullUserResponse && fullUserResponse.data) {
+                        setUser(fullUserResponse.data.user);
+                    };
+
                     navigate('/homePage');
                 } else if (response.status === StatusCodes.BAD_REQUEST) {
                     Swal.fire('Error', 'Invalid credentials', 'error');
                 }
             }
         } catch (error) {
+            console.log("errorr", error);
             Swal.fire('Error', 'An error occurred during login.', 'error');
-        }
+        };
     };
 
     const handleGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
         if (credentialResponse.credential) {
             try {
-                console.log(credentialResponse.credential);
                 const response = await api.googleLogin(credentialResponse.credential);
 
                 if (response && response.status === StatusCodes.OK) {
-                    localStorage.setItem('user', JSON.stringify(response.data));
-                    setIsLoggedIn(true);
+                    const loginResponse = response.data;
+                    
+                    localStorage.setItem('loggedInUserId', JSON.stringify(loginResponse._id));
+                    localStorage.setItem('token', JSON.stringify(loginResponse.token));
+
+                    const fullUserResponse = await api.getLoggedInUser(JSON.stringify(loginResponse._id));
+                    if (fullUserResponse && fullUserResponse.data) {
+                        setUser(fullUserResponse.data.user);
+                    };
+
                     navigate('/homePage');
                 } else {
                     Swal.fire('Error', 'An error occurred during Google login.', 'error');
                 }
             } catch (error) {
                 Swal.fire('Error', 'An error occurred during Google login.', 'error');
-            }
+                console.log(error);
+        }
         }
     };
 

@@ -1,30 +1,38 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import { User } from '../api/types/User';
+import api from '../api/api';
 
-interface AuthContextProps {
-    isLoggedIn: boolean;
-    setIsLoggedIn: (isLoggedIn: boolean) => void;
+interface AuthContextType {
+    user: User | null;
+    setUser: (user: User | null) => void;
 }
 
-const AuthContext = createContext<AuthContextProps>({
-    isLoggedIn: false,
-    setIsLoggedIn: () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [user, setUser] = useState<User | null>(JSON.parse(localStorage.getItem('user') || 'null'));
 
     useEffect(() => {
-        const user = localStorage.getItem('user');
-        if (user) {
-            setIsLoggedIn(true);
-        }
+        const fetchUserDetails = async () => {
+            if (!user || !user._id) {
+                const response = (await api.getLoggedInUser(localStorage.getItem('loggedInUserId')!));
+                // console.log("authcon", response?.data.data); // response.data.data is the user object
+
+                if (response && response.status === 200) {
+                    setUser(response.data.data);
+                }
+            }
+        };
+
+        fetchUserDetails();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+        <AuthContext.Provider value={{ user, setUser }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
 export { AuthContext, AuthProvider };
+export type { AuthContextType };

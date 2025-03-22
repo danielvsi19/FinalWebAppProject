@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+import { GetLoggedInUserResponse } from "./types/Responses/GetLoggedInUserResponse";
 import { LoginResponse } from "./types/Responses/LoginResponse";
 import { RegisterResponse } from "./types/Responses/RegisterResponse";
 import { User } from "./types/User";

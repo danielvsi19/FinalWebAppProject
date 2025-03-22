@@ -10,7 +10,7 @@ interface Page {
     name: string,
 };
 
-const pages: Page [] = [
+const createPages = (userName: string): Page [] => [
     {
         path: "/",
         element: <LoginPage />,
@@ -19,7 +19,7 @@ const pages: Page [] = [
     {
         path: "/user",
         element: <UserPage />,
-        name: "User",
+        name: userName || "User",
     },
     {
         path: "/userPosts",
@@ -33,5 +33,5 @@ const pages: Page [] = [
     },
 ];
 
-export { pages };
+export { createPages };
 export type { Page };

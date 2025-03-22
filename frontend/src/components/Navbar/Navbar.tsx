@@ -1,23 +1,32 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import "./Navbar.css";
-import { pages } from "../../router";
+import { createPages, Page } from "../../router";
 import logo from "../../assets/logo.png";
-import { AuthContext } from "../../contexts/AuthContext";
+import { AuthContext, AuthContextType } from "../../contexts/AuthContext";
 
 export const Navbar = () => {
-    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
+    const authContext = useContext<AuthContextType | undefined>(AuthContext);
     const navigate = useNavigate();
+    
+    if (!authContext) {
+        return null;
+    };
+    
+    const { user, setUser } = authContext || {};
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
-        setIsLoggedIn(false);
+        localStorage.removeItem('loggedInUserId');
+        localStorage.removeItem('token');
+        setUser(null);
         navigate('/');
     };
 
-    if (!isLoggedIn) {
+    if (!user) {
         return null;
     };
+
+    const pages: Page[] = createPages(user.username);
 
     return (
         <div>
