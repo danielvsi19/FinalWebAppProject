@@ -15,24 +15,63 @@ const upload = multer({ dest: 'uploads/' });
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         username:
+ *           type: string
+ *         email:
+ *           type: string
+ *         profilePicture:
+ *           type: string
+ *         posts:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Post'
+ *         comments:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Comment'
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ * 
  * /users:
  *   get:
  *     summary: Get all users
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of all users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
  *       401:
  *         description: Unauthorized
- */
-router.get('/', authMiddleware, userController.getAllUsers);
-
-/**
- * @swagger
+ * 
  * /users/{id}:
  *   get:
  *     summary: Get user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -43,19 +82,25 @@ router.get('/', authMiddleware, userController.getAllUsers);
  *     responses:
  *       200:
  *         description: User data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
  *       401:
  *         description: Unauthorized
- */
-router.get('/:id', authMiddleware, userController.getById);
-
-/**
- * @swagger
- * /users/{id}:
+ * 
  *   put:
  *     summary: Update user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -66,7 +111,7 @@ router.get('/:id', authMiddleware, userController.getById);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -74,24 +119,33 @@ router.get('/:id', authMiddleware, userController.getById);
  *                 type: string
  *               email:
  *                 type: string
+ *               profilePicture:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
  *       400:
  *         description: Username or email already in use
  *       404:
  *         description: User not found
  *       401:
  *         description: Unauthorized
- */
-router.put('/:id', authMiddleware, upload.single('profilePicture'), userController.updateUser);
-
-/**
- * @swagger
- * /users/{id}:
+ * 
  *   delete:
  *     summary: Delete user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -102,11 +156,22 @@ router.put('/:id', authMiddleware, upload.single('profilePicture'), userControll
  *     responses:
  *       200:
  *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  *       404:
  *         description: User not found
  *       401:
  *         description: Unauthorized
  */
+
+router.get('/', authMiddleware, userController.getAllUsers);
+router.get('/:id', authMiddleware, userController.getById);
+router.put('/:id', authMiddleware, upload.single('profilePicture'), userController.updateUser);
 router.delete('/:id', authMiddleware, userController.deleteUser);
 
 export default router;

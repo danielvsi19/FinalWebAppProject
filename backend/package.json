@@ -6,9 +6,10 @@
   "scripts": {
     "start": "tsc && node ./dist/backend/src/app.js",
     "dev": "nodemon ./src/app.ts",
-    "test": " tsc && jest --detectOpenHandles --forceExit --coverage",
+    "test": "jest --detectOpenHandles --forceExit --coverage",
     "testauth": " tsc && jest --detectOpenHandles --forceExit auth.test.ts",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "test:watch": "jest --watch"
   },
   "author": "eden aharon",
   "license": "ISC",

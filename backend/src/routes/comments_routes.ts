@@ -13,6 +13,31 @@ const router = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     Comment:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         content:
+ *           type: string
+ *         author:
+ *           type: object
+ *           properties:
+ *             _id:
+ *               type: string
+ *             username:
+ *               type: string
+ *         post:
+ *           type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ * 
  * /comments:
  *   get:
  *     summary: Get all comments
@@ -39,6 +64,12 @@ router.get("/", commentsController.getAllComments);
  *     responses:
  *       200:
  *         description: List of comments for the post
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Comment'
  *       404:
  *         description: Post not found
  */
@@ -50,6 +81,8 @@ router.get("/post/:postId", commentsController.getCommentsByPost);
  *   post:
  *     summary: Create a new comment
  *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: postId
@@ -65,12 +98,19 @@ router.get("/post/:postId", commentsController.getCommentsByPost);
  *             type: object
  *             required:
  *               - content
+ *               - authorId
  *             properties:
  *               content:
+ *                 type: string
+ *               authorId:
  *                 type: string
  *     responses:
  *       201:
  *         description: Comment created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
  *       401:
  *         description: Unauthorized
  */

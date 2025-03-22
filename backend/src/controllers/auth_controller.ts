@@ -95,38 +95,64 @@ const googleLogin = async (req: Request, res: Response) => {
         if (!payload) {
             res.status(400).json({ message: 'Invalid Google token' });
             return;
-        };
-
-        const { sub, email, name, picture } = payload;
-        let user = await userModel.findOne({ googleId: sub });
-
-        if (!user) {
-            user = new userModel({
-                username: name,
-                email: email,
-                googleId: sub,
-                profilePicture: picture,
-            });
-
-            await user.save();
         }
 
-        if (!process.env.TOKEN_SECRET) {
-            res.status(500).json({ message: "Server Error" });
-            return;
-        };
+        const { sub, email, name, picture } = payload;
         
-        const jwtToken = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRATION });
+        // Add error handling for required fields
+        if (!email || !name) {
+            res.status(400).json({ message: 'Missing required user information from Google' });
+            return;
+        }
 
-        res.status(200).json({
-            username: user.username,
-            email: user.email,
-            _id: user._id,
-            token: jwtToken,
-        });
-    } catch (error) {
-        res.status(500).json({ message: 'Error logging in with Google' });
-    };
+        try {
+            let user = await userModel.findOne({ 
+                $or: [
+                    { googleId: sub },
+                    { email: email }
+                ]
+            });
+
+            if (!user) {
+                user = new userModel({
+                    username: name,
+                    email: email,
+                    googleId: sub,
+                    profilePicture: picture || '',
+                });
+
+                await user.save();
+            } else if (!user.googleId) {
+                // Update existing email user with Google ID
+                user.googleId = sub;
+                user.profilePicture = picture || user.profilePicture;
+                await user.save();
+            }
+
+            if (!process.env.TOKEN_SECRET) {
+                throw new Error('TOKEN_SECRET is not configured');
+            }
+
+            const jwtToken = jwt.sign(
+                { _id: user._id }, 
+                process.env.TOKEN_SECRET, 
+                { expiresIn: process.env.TOKEN_EXPIRATION || '1d' }
+            );
+
+            res.status(200).json({
+                username: user.username,
+                email: user.email,
+                _id: user._id,
+                token: jwtToken,
+            });
+        } catch (dbError) {
+            console.error('Database error:', dbError);
+            res.status(500).json({ message: 'Error saving user data' });
+        }
+    } catch (verificationError) {
+        console.error('Token verification error:', verificationError);
+        res.status(401).json({ message: 'Invalid Google token' });
+    }
 };
 
 const logout = (req: Request, res: Response) => {

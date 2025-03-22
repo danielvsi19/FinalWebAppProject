@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-<<<<<<< HEAD
 import { Card, Button, Modal, Form } from 'react-bootstrap';
-=======
-import { Card, Modal, Button } from 'react-bootstrap';
->>>>>>> a17759e9bf67dd3db81305efa03c30ec95f9b0a8
 import { Post } from '../../api/types/Post';
 import { Comment } from '../../api/types/Comment';
 import { CommentComponent } from '../Comment/Comment';
@@ -11,7 +7,6 @@ import api from '../../api/api';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
 import './Post.css';
 
-<<<<<<< HEAD
 const PostComponent: React.FC<Post> = ({ _id, title: initialTitle, content: initialContent, image: initialImage, createdAt, likes, likedBy, senderId }) => {
     const authContext = useContext<AuthContextType | undefined>(AuthContext);
     const [likesCount, setLikesCount] = useState(likes);
@@ -24,14 +19,9 @@ const PostComponent: React.FC<Post> = ({ _id, title: initialTitle, content: init
     const [currentContent, setCurrentContent] = useState(initialContent);
     const [currentImage, setCurrentImage] = useState(initialImage);
     const [isOwner, setIsOwner] = useState(false);
-=======
-const PostComponent: React.FC<Post> = ({ _id, title, content, image, createdAt, likes, likedBy, comments }) => {
-    const authContext = useContext<AuthContextType | undefined>(AuthContext);
-    const [likesCount, setLikesCount] = useState(likes);
-    const [isLiked, setIsLiked] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [fetchedComments, setFetchedComments] = useState<Comment[]>([]);
->>>>>>> a17759e9bf67dd3db81305efa03c30ec95f9b0a8
+    const [commentCount, setCommentCount] = useState(0);
 
     useEffect(() => {
         if (authContext?.user) {
@@ -39,6 +29,25 @@ const PostComponent: React.FC<Post> = ({ _id, title, content, image, createdAt, 
             setIsLiked(likedBy.includes(authContext.user._id));
         }
     }, [authContext, senderId, likedBy]);
+
+    // Add effect to fetch comment count on mount
+    useEffect(() => {
+        const fetchCommentCount = async () => {
+            try {
+                const response = await api.getCommentsByPostId(_id);
+                if (response && response.data) {
+                    setCommentCount(response.data.length || 0); // Set to 0 if empty array
+                } else {
+                    setCommentCount(0); // Explicitly set to 0 if no response data
+                }
+            } catch (error) {
+                console.error('Error fetching comment count:', error);
+                setCommentCount(0); // Set to 0 on error
+            }
+        };
+
+        fetchCommentCount();
+    }, [_id]);
 
     const handleLike = async () => {
         try {
@@ -66,7 +75,7 @@ const PostComponent: React.FC<Post> = ({ _id, title, content, image, createdAt, 
 
     const getImageUrl = (imagePath: string) => {
         if (imagePath?.startsWith('http')) return imagePath;
-        return `http://localhost:3000/${imagePath}`;
+        return `https://localhost:3000/${imagePath}`;
     };
 
     const handleEdit = async () => {
@@ -121,6 +130,7 @@ const PostComponent: React.FC<Post> = ({ _id, title, content, image, createdAt, 
                     createdAt: comment.createdAt,
                 }));
                 setFetchedComments(mappedComments);
+                setCommentCount(mappedComments.length); // Set the comment count
             }
         } catch (error) {
             console.error('Error fetching comments:', error);
@@ -143,6 +153,7 @@ const PostComponent: React.FC<Post> = ({ _id, title, content, image, createdAt, 
             <Card.Text className="text-muted">
                 Created at: {new Date(createdAt).toLocaleDateString()}
             </Card.Text>
+            
             <div className="post-actions d-flex justify-content-between align-items-center">
                 <div className="likes-count">
                     <i
@@ -151,25 +162,36 @@ const PostComponent: React.FC<Post> = ({ _id, title, content, image, createdAt, 
                         onClick={isLiked ? handleUnlike : handleLike}
                     ></i> {likesCount}
                 </div>
-                {isOwner && (
-                    <div className="owner-actions">
-                        <Button 
-                            variant="outline-primary" 
-                            size="sm" 
-                            className="me-2"
-                            onClick={() => setShowEditModal(true)}
-                        >
-                            <i className="bi bi-pencil"></i> Edit
-                        </Button>
-                        <Button 
-                            variant="outline-danger" 
-                            size="sm"
-                            onClick={handleDelete}
-                        >
-                            <i className="bi bi-trash"></i> Delete
-                        </Button>
+                
+                <div className="d-flex align-items-center">
+                    <div 
+                        className="me-3"
+                        style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }} 
+                        onClick={handleShowComments}
+                    >
+                        <i className="bi bi-chat-dots me-1"></i> Comments ({commentCount})
                     </div>
-                )}
+                    
+                    {isOwner && (
+                        <div className="owner-actions">
+                            <Button 
+                                variant="outline-primary" 
+                                size="sm" 
+                                className="me-2"
+                                onClick={() => setShowEditModal(true)}
+                            >
+                                <i className="bi bi-pencil"></i> Edit
+                            </Button>
+                            <Button 
+                                variant="outline-danger" 
+                                size="sm"
+                                onClick={handleDelete}
+                            >
+                                <i className="bi bi-trash"></i> Delete
+                            </Button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Edit Modal */}
@@ -229,18 +251,25 @@ const PostComponent: React.FC<Post> = ({ _id, title, content, image, createdAt, 
                     </Button>
                     <Button variant="primary" onClick={handleEdit}>
                         Save Changes
-            <div 
-                style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }} 
-                onClick={handleShowComments}
-            >
-                <i className="bi bi-chat-dots"></i> {comments.length} Show Comments
-            </div>
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
+            {/* Comments Modal */}
             <Modal show={showComments} onHide={handleCloseComments}>
                 <Modal.Header closeButton>
                     <Modal.Title>Comments</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {/* Add Comment Form */}
+                    <CommentComponent 
+                        postId={_id}
+                        onCommentAdded={handleShowComments}
+                    />
+
+                    <hr />
+
+                    {/* Existing Comments */}
                     {fetchedComments.length > 0 ? (
                         fetchedComments.map((comment) => (
                             <CommentComponent 

@@ -9,7 +9,7 @@ import { UnlikePostResponse } from "./types/Responses/UnlikePostResponse.ts";
 import { User } from "./types/User";
 import axios, { AxiosResponse } from "axios";
 
-const BACKEND_URL = 'http://localhost:3000';
+const BACKEND_URL = 'https://localhost:3000';
 
 const getData = async <T>(
     request: Promise<AxiosResponse<T, unknown>>
@@ -73,7 +73,19 @@ export default {
     },
     deletePost(postId: string): Promise<AxiosResponse<any, unknown> | null> {
         return getData<any>(axiosInstance.delete(`/posts/${postId}`));
+    },
     getCommentsByPostId(postId: string): Promise<AxiosResponse<GetCommentsResponse, unknown> | null> {
         return getData<GetCommentsResponse>(axiosInstance.get<GetCommentsResponse>(`/comments/post/${postId}`));
+    },
+    createComment(postId: string, content: string, authorId: string): Promise<AxiosResponse<any, unknown> | null> {
+        const token = JSON.parse(localStorage.getItem('token') || '""');
+        return getData<any>(axiosInstance.post(`/comments/post/${postId}`, 
+            { content, authorId },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        ));
     },
 };

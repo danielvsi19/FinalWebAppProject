@@ -12,9 +12,17 @@ import bodyParser from "body-parser";
 import setupSwagger from "./swagger";
 import cors from "cors";
 import path from "path";
+import https from 'https';
+import fs from 'fs';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// SSL configuration
+const sslOptions = {
+    key: fs.readFileSync(path.resolve(__dirname, '../../certificates/private.key')),
+    cert: fs.readFileSync(path.resolve(__dirname, '../../certificates/certificate.pem'))
+};
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -43,8 +51,10 @@ mongoose.connect(process.env.DB_URL_ENV)
   .then(() => {
     console.log('Connected to MongoDB');
     if (require.main === module) {
-      app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
+      // Create HTTPS server
+      const httpsServer = https.createServer(sslOptions, app);
+      httpsServer.listen(PORT, () => {
+        console.log(`Server is running on https://localhost:${PORT}`);
       });
     }
   })

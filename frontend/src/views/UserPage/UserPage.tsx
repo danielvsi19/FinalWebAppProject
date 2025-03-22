@@ -15,7 +15,7 @@ const UserPage: React.FC = () => {
     useEffect(() => {
         if (authContext?.user) {
             setUsername(authContext.user.username);
-            setPreview(`http://localhost:3000/${authContext.user.profilePicture}`);
+            setPreview(`https://localhost:3000/${authContext.user.profilePicture}`);
         }
     }, [authContext]);
 
@@ -32,7 +32,7 @@ const UserPage: React.FC = () => {
         // Reset to original values
         if (authContext?.user) {
             setUsername(authContext.user.username);
-            setPreview(`http://localhost:3000/${authContext.user.profilePicture}`);
+            setPreview(`https://localhost:3000/${authContext.user.profilePicture}`);
         }
         setProfilePicture(null);
     };
@@ -54,8 +54,8 @@ const UserPage: React.FC = () => {
                     setUsername(updatedUser.username);
                     setPreview(
                         updatedUser.profilePicture 
-                            ? `http://localhost:3000/${updatedUser.profilePicture}`
-                            : 'http://localhost:3000/uploads/default-profile.png'
+                            ? `https://localhost:3000/${updatedUser.profilePicture}`
+                            : 'https://localhost:3000/uploads/default-profile.png'
                     );
                 } else {
                     console.error('No data received from API');

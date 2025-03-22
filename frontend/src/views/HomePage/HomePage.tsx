@@ -29,7 +29,7 @@ const HomePage: React.FC = () => {
 
     const fetchNews = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/news');
+            const response = await axios.get('https://localhost:3000/news');
             setNews(response.data);
         } catch (error: any) {
             console.error('Error fetching news:', error);
@@ -40,7 +40,7 @@ const HomePage: React.FC = () => {
     const fetchPosts = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:3000/posts');
+            const response = await axios.get('https://localhost:3000/posts');
             const allPosts = response.data;
             setPosts(allPosts);
             setTotalPages(Math.ceil(allPosts.length / POSTS_PER_PAGE));
@@ -64,7 +64,7 @@ const HomePage: React.FC = () => {
 
             // Get token and properly format the Authorization header
             const token = JSON.parse(localStorage.getItem('token') || '""');
-            const response = await axios.post('http://localhost:3000/posts', formData, {
+            const response = await axios.post('https://localhost:3000/posts', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}` // Make sure it's "Bearer "

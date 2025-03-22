@@ -61,8 +61,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ toggleForm }) => {
         if (credentialResponse.credential) {
             try {
                 const response = await api.googleLogin(credentialResponse.credential);
-
-                if (response?.status === StatusCodes.OK) {
+                
+                if (response?.status === 200 && response.data) {
                     const loginResponse = response.data;
                     
                     localStorage.setItem('loggedInUserId', JSON.stringify(loginResponse._id));
@@ -72,17 +72,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ toggleForm }) => {
                     
                     if (fullUserResponse?.data?.data) {
                         await setUser(fullUserResponse.data.data);
-                        
-                        setTimeout(() => {
-                            navigate('/homePage');
-                        }, 100);
+                        navigate('/homePage');
+                    } else {
+                        throw new Error('Failed to get user data');
                     }
                 } else {
-                    Swal.fire('Error', 'An error occurred during Google login.', 'error');
+                    throw new Error(response?.data?.message || 'Login failed');
                 }
             } catch (error) {
                 console.error("Google login error:", error);
-                Swal.fire('Error', 'An error occurred during Google login.', 'error');
+                Swal.fire('Error', 'Failed to login with Google. Please try again.', 'error');
             }
         }
     };
