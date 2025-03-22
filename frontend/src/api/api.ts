@@ -33,9 +33,6 @@ export default {
     getUser(id: number): Promise<AxiosResponse<User, unknown> | null> {
         return getData<User>(axiosInstance.get<User>(`/users/${id}`));
     },
-    getLoggedInUser(loggedInUserId: string): Promise<AxiosResponse<GetLoggedInUserResponse, unknown> | null> {
-        return getData<GetLoggedInUserResponse>(axiosInstance.get<GetLoggedInUserResponse>("users/" + JSON.parse(loggedInUserId)));
-    },
     updateUser(id: number, data: FormData): Promise<AxiosResponse<User, unknown> | null> {
         return getData<User>(axiosInstance.put<User>(`/users/${id}`, data, {
             headers: {
