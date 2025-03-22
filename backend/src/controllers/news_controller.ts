@@ -8,7 +8,7 @@ interface NewsItem {
 }
 
 class NewsController {
-    private static FETCH_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    private static FETCH_INTERVAL = 6 * 60 * 60 * 1000;
     private genAI: any;
     private model: any;
     private prompt: string;
@@ -16,22 +16,12 @@ class NewsController {
     constructor() {
         this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         this.model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        this.prompt = `Generate 3 recent positive news stories. 
-            Return them in the following JSON format, and ONLY the JSON:
-            [
-                {
-                    "title": "First news title",
-                    "content": "First news content"
-                },
-                {
-                    "title": "Second news title",
-                    "content": "Second news content"
-                },
-                {
-                    "title": "Third news title",
-                    "content": "Third news content"
-                }
-            ]`;
+        this.prompt = `Generate 1 recent positive news story. 
+            Return it in the following JSON format, and ONLY the JSON:
+            {
+                "title": "News title",
+                "content": "News content"
+            }`;
         this.getNews = this.getNews.bind(this);
         this.fetchFromGemini = this.fetchFromGemini.bind(this);
     }
@@ -40,15 +30,13 @@ class NewsController {
         const result = await this.model.generateContent(this.prompt);
         const text = result.response.text();
         try {
-            // Remove any potential markdown formatting and extract JSON
             const jsonStr = text.replace(/```json\n?|\n?```/g, '').trim();
-            const newsItems = JSON.parse(jsonStr) as NewsItem[];
+            const newsItem = JSON.parse(jsonStr) as NewsItem;
             
-            // Clean and format the news items
-            return newsItems.map(item => ({
-                title: this.formatText(item.title),
-                content: this.formatText(item.content)
-            }));
+            return {
+                title: this.formatText(newsItem.title),
+                content: this.formatText(newsItem.content)
+            };
         } catch (error) {
             console.error('Error parsing Gemini response:', error);
             return null;
@@ -57,13 +45,9 @@ class NewsController {
 
     private formatText(text: string): string {
         return text
-            // Remove any remaining JSON formatting
             .replace(/["\[\]{}]/g, '')
-            // Remove any escaped quotes
             .replace(/\\"/g, '"')
-            // Remove any double spaces
             .replace(/\s+/g, ' ')
-            // Trim whitespace
             .trim();
     }
 
@@ -81,21 +65,21 @@ class NewsController {
             const shouldFetch = await this.shouldFetchNews();
             
             if (shouldFetch) {
-                const newsItems = await this.fetchFromGemini();
+                const newsItem = await this.fetchFromGemini();
                 
-                if (newsItems && Array.isArray(newsItems)) {
+                if (newsItem) {
                     // Clear old news
                     await NewsModel.deleteMany({});
-                    // Insert new news items
-                    await NewsModel.insertMany(newsItems);
+                    // Insert new news item
+                    await NewsModel.create(newsItem);
                 } else {
                     throw new Error('Failed to fetch valid news from Gemini');
                 }
             }
 
             // Return current news from database
-            const news = await NewsModel.find().sort({ createdAt: -1 });
-            res.status(200).json(news);
+            const news = await NewsModel.findOne().sort({ createdAt: -1 });
+            res.status(200).json([news]);
         } catch (error: any) {
             console.error('News controller error:', error);
             next(error);

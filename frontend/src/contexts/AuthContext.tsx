@@ -10,21 +10,42 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(JSON.parse(localStorage.getItem('user') || 'null'));
+    const [user, setUser] = useState<User | null>(() => {
+        const savedUser = localStorage.getItem('user');
+        return savedUser ? JSON.parse(savedUser) : null;
+    });
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchUserDetails = async () => {
-            if (!user || !user._id) {
-                const response = (await api.getLoggedInUser(localStorage.getItem('loggedInUserId')!));
-
-                if (response && response.status === 200) {
-                    setUser(response.data.data);
+            const userId = localStorage.getItem('loggedInUserId');
+            if (!user && userId) {
+                try {
+                    const response = await api.getLoggedInUser(userId);
+                    if (response?.status === 200 && response.data?.data) {
+                        setUser(response.data.data);
+                    }
+                } catch (error) {
+                    console.error('Error fetching user details:', error);
                 }
             }
+            setIsLoading(false);
         };
 
         fetchUserDetails();
     }, []);
+
+    useEffect(() => {
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('user');
+        }
+    }, [user]);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <AuthContext.Provider value={{ user, setUser }}>

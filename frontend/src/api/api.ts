@@ -38,7 +38,7 @@ export default {
         return getData<GetLoggedInUserResponse>(axiosInstance.get<GetLoggedInUserResponse>("users/" + JSON.parse(loggedInUserId)));
     },
     updateUser(id: number, data: FormData): Promise<AxiosResponse<User, unknown> | null> {
-        return getData<User>(axiosInstance.put<User>(`/user/${id}`, data, {
+        return getData<User>(axiosInstance.put<User>(`/users/${id}`, data, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
