@@ -4,6 +4,7 @@ import "./Navbar.css";
 import { createPages, Page } from "../../router";
 import logo from "../../assets/logo.png";
 import { AuthContext, AuthContextType } from "../../contexts/AuthContext";
+import ScaleLoader from "react-spinners/ScaleLoader";
 
 export const Navbar = () => {
     const authContext = useContext<AuthContextType | undefined>(AuthContext);
@@ -22,14 +23,11 @@ export const Navbar = () => {
         navigate('/');
     };
 
-    if (!user) {
-        return null;
-    };
+    const pages: Page[] = createPages(user ? user.username : "User");
 
-    const pages: Page[] = createPages(user.username);
-
-    return (
-        <div>
+    return ( 
+        <>
+        {user && <div>
             <nav className="navbar navbar-expand navbar-light justify-content-between">
                 <div className="navbar">
                     <a className="" href="/">
@@ -69,6 +67,7 @@ export const Navbar = () => {
                     </ul>
                 </div>
             </nav>
-        </div>
+        </div>}
+        </>
     );
 };

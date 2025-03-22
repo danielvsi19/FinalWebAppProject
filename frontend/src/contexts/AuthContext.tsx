@@ -16,7 +16,6 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         const fetchUserDetails = async () => {
             if (!user || !user._id) {
                 const response = (await api.getLoggedInUser(localStorage.getItem('loggedInUserId')!));
-                // console.log("authcon", response?.data.data); // response.data.data is the user object
 
                 if (response && response.status === 200) {
                     setUser(response.data.data);
