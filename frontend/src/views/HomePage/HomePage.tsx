@@ -13,6 +13,7 @@ interface NewsItem {
 }
 
 const POSTS_PER_PAGE = 5;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const HomePage: React.FC = () => {
     const authContext = useContext(AuthContext);
@@ -29,7 +30,7 @@ const HomePage: React.FC = () => {
 
     const fetchNews = async () => {
         try {
-            const response = await axios.get('https://localhost:3000/news');
+            const response = await axios.get(`${BACKEND_URL}/news`);
             setNews(response.data);
         } catch (error: any) {
             console.error('Error fetching news:', error);
@@ -40,7 +41,7 @@ const HomePage: React.FC = () => {
     const fetchPosts = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('https://localhost:3000/posts');
+            const response = await axios.get(`${BACKEND_URL}/posts`);
             const allPosts = response.data;
             setPosts(allPosts);
             setTotalPages(Math.ceil(allPosts.length / POSTS_PER_PAGE));
@@ -62,12 +63,11 @@ const HomePage: React.FC = () => {
                 formData.append('image', newPostImage);
             }
 
-            // Get token and properly format the Authorization header
             const token = JSON.parse(localStorage.getItem('token') || '""');
-            const response = await axios.post('https://localhost:3000/posts', formData, {
+            const response = await axios.post(`${BACKEND_URL}/posts`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}` // Make sure it's "Bearer "
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
@@ -76,7 +76,6 @@ const HomePage: React.FC = () => {
                 setNewPostTitle('');
                 setNewPostContent('');
                 setNewPostImage(null);
-                // Refresh posts
                 await fetchPosts();
             }
         } catch (error: any) {

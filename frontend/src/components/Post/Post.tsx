@@ -7,6 +7,8 @@ import api from '../../api/api';
 import { AuthContext, AuthContextType } from '../../contexts/AuthContext';
 import './Post.css';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const PostComponent: React.FC<Post> = ({ _id, title: initialTitle, content: initialContent, image: initialImage, createdAt, likes, likedBy, senderId }) => {
     const authContext = useContext<AuthContextType | undefined>(AuthContext);
     const [likesCount, setLikesCount] = useState(likes);
@@ -75,7 +77,7 @@ const PostComponent: React.FC<Post> = ({ _id, title: initialTitle, content: init
 
     const getImageUrl = (imagePath: string) => {
         if (imagePath?.startsWith('http')) return imagePath;
-        return `https://localhost:3000/${imagePath}`;
+        return `${BACKEND_URL}/${imagePath}`;
     };
 
     const handleEdit = async () => {

@@ -5,6 +5,8 @@ import ScaleLoader from 'react-spinners/ScaleLoader';
 import api from '../../api/api';
 import './UserPage.css';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const UserPage: React.FC = () => {
     const authContext = useContext<AuthContextType | undefined>(AuthContext);
     const [isEditing, setIsEditing] = useState(false);
@@ -15,7 +17,7 @@ const UserPage: React.FC = () => {
     useEffect(() => {
         if (authContext?.user) {
             setUsername(authContext.user.username);
-            setPreview(`https://localhost:3000/${authContext.user.profilePicture}`);
+            setPreview(`${BACKEND_URL}/${authContext.user.profilePicture}`);
         }
     }, [authContext]);
 
@@ -32,7 +34,7 @@ const UserPage: React.FC = () => {
         // Reset to original values
         if (authContext?.user) {
             setUsername(authContext.user.username);
-            setPreview(`https://localhost:3000/${authContext.user.profilePicture}`);
+            setPreview(`${BACKEND_URL}/${authContext.user.profilePicture}`);
         }
         setProfilePicture(null);
     };
@@ -54,8 +56,8 @@ const UserPage: React.FC = () => {
                     setUsername(updatedUser.username);
                     setPreview(
                         updatedUser.profilePicture 
-                            ? `https://localhost:3000/${updatedUser.profilePicture}`
-                            : 'https://localhost:3000/uploads/default-profile.png'
+                            ? `${BACKEND_URL}/${updatedUser.profilePicture}`
+                            : `${BACKEND_URL}/uploads/default-profile.png`
                     );
                 } else {
                     console.error('No data received from API');

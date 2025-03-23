@@ -9,7 +9,7 @@ import { UnlikePostResponse } from "./types/Responses/UnlikePostResponse.ts";
 import { User } from "./types/User";
 import axios, { AxiosResponse } from "axios";
 
-const BACKEND_URL = 'https://localhost:3000';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const getData = async <T>(
     request: Promise<AxiosResponse<T, unknown>>
